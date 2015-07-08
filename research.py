@@ -48,5 +48,6 @@ pack(Tkinter.Radiobutton, text='Polish', variable=var2, value=3)
 pack(Tkinter.Scale, orient=Tkinter.HORIZONTAL, from_=10, to=50, tickinterval=10, length=300)
 
 root.after_idle(set_time)
+root.after_idle(lambda: root.title('hali - gali'))
 root.mainloop()
 

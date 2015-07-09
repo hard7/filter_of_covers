@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-__author__ = 'anosov'
+__author__ = 'hard7'
 
 import Tkinter
 import time

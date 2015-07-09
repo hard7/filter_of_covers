@@ -1,5 +1,7 @@
 
 import Tkinter as tk
+import sec
+
 
 # mock
 class DataHandler(object):
@@ -19,7 +21,17 @@ class GUI(object):
         self._sections = list()
 
     def append(self, section):
-        self._sections.append(section(self._root, self._handler))
+        if self._sections:
+            self._add_separator()
+
+        frame = tk.Frame()
+        func = section(frame, self._handler)
+        if func is not None:
+            self._sections.append(func)
+        frame.pack()
+
+    def _add_separator(self):
+        tk.Frame(height=2, bd=1, relief=tk.SUNKEN).pack(fill=tk.X, padx=10, pady=5)
 
     def run(self):
         self._root.after_idle(self._run_sections)
@@ -29,28 +41,11 @@ class GUI(object):
         [sec() for sec in self._sections]
         print 'done'
 
-# sections
-def timer_section(root, handler):
-    time_label = tk.Label(root, text='asd')
-    time_label.pack()
-    c = [0]
-
-    def set_time():
-        c[0] += 1
-        time_label['text'] = str(c[0])
-        root.after(1000, set_time)
-
-
-    def wrapper():
-        root.after_idle(set_time)
-        root.after_idle(lambda: root.title('hali - gali'))
-    return wrapper
-
 
 if __name__ == '__main__':
     dh = DataHandler()
     gui = GUI(dh)
-
-    gui.append(timer_section)
+    gui.append(sec.timer_section)
+    gui.append(sec.show_42)
 
     gui.run()

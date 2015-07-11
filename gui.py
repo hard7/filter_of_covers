@@ -1,11 +1,12 @@
 __author__ = 'hard7'
 
-
+import data_handler
+import Tkinter as tk
 
 
 class GUI(object):
     def __init__(self, handler):
-        assert isinstance(handler, DataHandler)
+        assert isinstance(handler, data_handler.DataHandler)
         self._handler = handler
         self._root = tk.Tk()
         self._root.minsize(300, 200)

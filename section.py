@@ -21,14 +21,20 @@ def timer_section(root, handler):
 def show_42(root, handler):
     label = tk.Label(root, text='No Number')
     button = tk.Button(root, text='Press')
+    button_data_to_console = tk.Button(root, text='Data to console')
 
     label.pack()
     button.pack()
+    button_data_to_console.pack()
+
+    def press_button_data_to_console():
+        print handler.data
 
     def set_42():
-        label['text'] = handler.get_42()
+        label['text'] = handler.get_42
 
     button['command'] = set_42
+    button_data_to_console['command'] = press_button_data_to_console
 
 
 def show_count_of_covers(root, handler):

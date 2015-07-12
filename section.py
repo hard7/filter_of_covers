@@ -22,10 +22,15 @@ def show_42(root, handler):
     label = tk.Label(root, text='No Number')
     button = tk.Button(root, text='Press')
     button_data_to_console = tk.Button(root, text='Data to console')
+    btn_save = tk.Button(root, text='Save data')
 
     label.pack()
     button.pack()
     button_data_to_console.pack()
+    btn_save.pack()
+
+    def press_btn_save():
+        handler.dump()
 
     def press_button_data_to_console():
         print handler.data
@@ -35,6 +40,7 @@ def show_42(root, handler):
 
     button['command'] = set_42
     button_data_to_console['command'] = press_button_data_to_console
+    btn_save['command'] = press_btn_save
 
 
 def show_count_of_covers(root, handler):

@@ -20,14 +20,26 @@ class DataHandler(object):
         self.covers = loaded_covers['covers']
         self.cover_paths = loaded_covers['cover_paths']
 
-        self._path_to_calculated_data = path_to_data
-        if path_to_data and os.path.isfile(path_to_data):
-            with open(path_to_data) as f:
-                pass
         self.data = dict()
+        self._path_to_data = path_to_data
+        self.load(path_to_data)
 
     @LazyHolder
     def get_42(self):
         print '42'
         return 42
 
+    def load(self, path=None):
+        if path and os.path.isfile(path):
+            with open(path) as f:
+                loaded_data = cPickle.load(f)
+            self.data.update(loaded_data)
+            for key, value in self.data.iteritems():
+                self.__dict__[key] = value
+
+    def dump(self, path=None):
+        path_for_save = path if path else self._path_to_data
+        if path_for_save is None:
+            raise Exception('Path for save should be set')
+        with open(path_for_save, 'w') as f:
+            cPickle.dump(self.data, f)

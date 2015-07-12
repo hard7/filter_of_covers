@@ -26,7 +26,6 @@ class DataHandler(object):
 
     @LazyHolder
     def get_42(self):
-        print '42'
         return 42
 
     def load(self, path=None):

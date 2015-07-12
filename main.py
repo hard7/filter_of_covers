@@ -8,9 +8,10 @@ from section import *
 
 
 if __name__ == '__main__':
-    dh = DataHandler()
+    dh = DataHandler('../test_10k_covers.dump')
     gui = GUI(dh)
     gui.append(timer_section)
     gui.append(show_42)
+    gui.append(show_count_of_covers)
 
     gui.run()

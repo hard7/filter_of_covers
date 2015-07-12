@@ -17,6 +17,7 @@ def timer_section(root, handler):
         # root.after_idle(lambda: root.title('hali - gali'))
     return wrapper
 
+
 def show_42(root, handler):
     label = tk.Label(root, text='No Number')
     button = tk.Button(root, text='Press')
@@ -28,3 +29,9 @@ def show_42(root, handler):
         label['text'] = handler.get_42()
 
     button['command'] = set_42
+
+
+def show_count_of_covers(root, handler):
+    count_covers = len(handler.covers)
+    text = 'Count of covers: ' + str(count_covers)
+    tk.Label(root, text=text).pack()

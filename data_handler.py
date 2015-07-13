@@ -3,7 +3,9 @@ __author__ = 'hard7'
 import cPickle
 import os.path
 from lazy_holder import LazyHolder
-
+from itertools import *
+from LG.field import Field as LG_Filed
+import StringIO
 
 # Covers dump description
 # of format https://goo.gl/Td4FmA
@@ -18,15 +20,29 @@ class DataHandler(object):
         self.cells = loaded_covers['cells']
         self.paths = loaded_covers['paths']
         self.covers = loaded_covers['covers']
-        self.cover_paths = loaded_covers['cover_paths']
+        self.finished_paths = loaded_covers['cover_paths']
 
         self.data = dict()
         self._path_to_data = path_to_data
         self.load(path_to_data)
 
-    @LazyHolder
-    def get_42(self):
-        return 42
+    @property
+    def finished_packed_paths(self):
+        return [self.paths[i] for i in self.finished_paths]
+
+    @property
+    def covers_count(self):
+        return len(self.covers)
+
+    def product(self, cover_i):
+        assert isinstance(cover_i, int)
+        cover = self.covers[cover_i]
+        unpacked_cover = [(self.cells[c_id], self.periods[p_id]) for (c_id, p_id) in cover]
+        unpacked_unwrapped_cover = [tuple(chain(*c)) for c in unpacked_cover]
+
+        field = LG_Filed.loads(self.base)
+        map(field.add_spear, unpacked_unwrapped_cover)
+        return field.take_json()
 
     def load(self, path=None):
         if path and os.path.isfile(path):

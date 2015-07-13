@@ -11,6 +11,11 @@ class GUI(object):
         self._root = tk.Tk()
         self._root.minsize(300, 200)
         self._sections = list()
+        self._root.bind("<Key>", self._press_key)
+
+    def _press_key(self, key):
+        if key.char.lower() == 'q':
+            self._root.quit()
 
     def append(self, section):
         if self._sections:

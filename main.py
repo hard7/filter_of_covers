@@ -3,15 +3,22 @@ import Tkinter as tk
 
 from data_handler import DataHandler
 from gui import GUI
-from section import *
-
+# from section.sample import *
+from section import trivia
 
 
 if __name__ == '__main__':
-    dh = DataHandler('../test_10k_covers.dump', '../data.dump')
+    # path_to_covers = '/home/anosov/data/test_covers/test_50k_covers.dump'
+    path_to_covers = '/home/anosov/data/test_covers/test_50k_covers_for_4_phases.dump'
+    path_to_data = '/home/anosov/data/test_covers/data.dump'
+
+    dh = DataHandler(path_to_covers, path_to_data)
     gui = GUI(dh)
-    gui.append(timer_section)
-    gui.append(show_42)
-    gui.append(show_count_of_covers)
+    # gui.append(timer_section)
+    # gui.append(show_42)
+    # gui.append(show_count_of_covers)
+
+    gui.append(trivia.show_stat)
+    gui.append(trivia.show_equal_stat)
 
     gui.run()

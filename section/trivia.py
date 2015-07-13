@@ -2,8 +2,18 @@ __author__ = 'anosov'
 
 import Tkinter as tk
 from data_handler import DataHandler
+from LG.field import Field as LG_Field
+from LG.solver import solve as LG_solve
+from LG.solver import Solver as LG_Solver
 
-def show_stat(root, handle):
+def write(path, str_):
+    with open(path, 'w') as f:
+        f.write(str_)
+
+EXTERNAL_PATH = '/ExternalLevels/'
+
+
+def show_stat_rm(root, handle):
     assert isinstance(handle, DataHandler)
 
     tk.Label(root, text='Count of covers: %i' % (handle.covers_count, )).pack()
@@ -35,36 +45,16 @@ def show_stat(root, handle):
         label__average_len_of_finished_path['text'] = 'Average len of finished paths: ' + str(average)
         label_min_max['text'] = 'Min: %i; Max %i' % (min(lens_of_finished_paths), max(lens_of_finished_paths))
 
-        print 'Unique', len(set(handle.finished_paths[i] for i in idx_of_max))
-
     return action
 
 def show_equal_stat(root, handle):
-    lb_0 = tk.Label(root, text='Different finished paths: ' + str(len(handle.paths)))
-    lb_0.pack()
+    point = 650
 
-    fpaths = map(set, handle.paths)
+    print 'spear_walked', handle.spear_walked[point]
+    print 'f_path', handle.finished_packed_paths[point]
 
-    stored = range(len(fpaths))
-    for i, fi in enumerate(fpaths):
-        for j, fj in enumerate(fpaths[i+1:]):
-            if i not in stored or j+i+1 not in stored:
-                continue
-            n = fi ^ fj
-            if len(n) < 10:
-                stored.remove(j+i+1)
+    print 'spear_walked max:', map(len, handle.spear_walked).index(4)
 
-    filtered = [handle.paths[i] for i in stored]
-    print '>', len(filtered)
-
-    path_ids = map(handle.paths.index, filtered)
-
-    a = map(handle.finished_paths.index, path_ids)
-
-    def press_btn0():
-        with open('/ExternalLevels/lvl.txt', 'w') as f:
-            f.write(handle.product(a.pop(0)))
-
-    tk.Button(text='SSAD', command=press_btn0).pack()
+    write(EXTERNAL_PATH + 'lvl.txt', handle.product(point))
 
 

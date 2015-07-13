@@ -34,6 +34,16 @@ class DataHandler(object):
     def covers_count(self):
         return len(self.covers)
 
+    @property
+    def spear_cells(self):
+        return [zip(*cover)[0] for cover in self.covers]
+
+    @property
+    def spear_walked(self):
+        spear_coords = map(set, self.spear_cells)
+        fp = map(set, self.finished_packed_paths)
+        return map(lambda a, b: tuple(a & b), spear_coords, fp)
+
     def product(self, cover_i):
         assert isinstance(cover_i, int)
         cover = self.covers[cover_i]
@@ -43,6 +53,13 @@ class DataHandler(object):
         field = LG_Filed.loads(self.base)
         map(field.add_spear, unpacked_unwrapped_cover)
         return field.take_json()
+
+    def make_unwrapped_spears(self, id):
+        cover = self.covers[id]
+        unpacked_cover = [(self.cells[c_id], self.periods[p_id]) for (c_id, p_id) in cover]
+        unpacked_unwrapped_cover = [tuple(chain(*c)) for c in unpacked_cover]
+        return unpacked_unwrapped_cover
+
 
     def load(self, path=None):
         if path and os.path.isfile(path):

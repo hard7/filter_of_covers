@@ -20,7 +20,9 @@ if __name__ == '__main__':
     # gui.append(show_42)
     # gui.append(show_count_of_covers)
 
-    gui.append(trivia.show_stat_rm)
-    gui.append(trivia.show_equal_stat)
+    # gui.append(trivia.show_stat_rm)
+    # gui.append(trivia.show_equal_stat)
+
+    gui.append(trivia.case_0)
 
     gui.run()

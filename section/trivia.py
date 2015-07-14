@@ -47,14 +47,54 @@ def show_stat_rm(root, handle):
 
     return action
 
-def show_equal_stat(root, handle):
-    point = 650
+def case_0(root, handle):
+    import numpy as np
 
-    print 'spear_walked', handle.spear_walked[point]
-    print 'f_path', handle.finished_packed_paths[point]
+    lbl_count = tk.Label(text='Count: ')
+    lbl_count.pack()
 
-    print 'spear_walked max:', map(len, handle.spear_walked).index(4)
+    tk.Label(root, text='Spear walked:  ').pack(side=tk.LEFT)
+    scale_1 = tk.Scale(root, orient=tk.HORIZONTAL, length=200)
 
-    write(EXTERNAL_PATH + 'lvl.txt', handle.product(point))
+    min_ = min(handle.spear_walked_count)
+    max_ = max(handle.spear_walked_count)
 
+    scale_1['showvalue'] = False
+    scale_1['sliderlength'] = 20
+    scale_1['tickinterval'] = 1
+    scale_1['from'] = min_
+    scale_1['to'] = max_
+    scale_1.set(min_)
+    scale_1.pack(side=tk.LEFT)
 
+    scale_2 = tk.Scale(root, orient=tk.HORIZONTAL, length=200)
+    scale_2['showvalue'] = False
+    scale_2['sliderlength'] = 20
+    scale_2['tickinterval'] = 1
+    scale_2['from'] = min_
+    scale_2['to'] = max_
+    scale_2.set(max_)
+    scale_2.pack(side=tk.LEFT)
+
+    btn = tk.Button(root, text='Filter')
+    btn.pack(side=tk.LEFT)
+
+    allowed = np.ones((1, len(handle.covers)), dtype=np.bool)
+
+    def cmd_1(var_1):
+        if int(var_1) > scale_2.get():
+            scale_1.set(scale_2.get())
+
+    def cmd_2(var_2):
+        if int(var_2) < scale_1.get():
+            scale_2.set(scale_1.get())
+
+    def cmd_btn():
+        a, b = scale_1.get(), scale_2.get()
+        for i, c in enumerate(handle.spear_walked_count):
+            allowed[0, i] = (a <= c <= b)
+        lbl_count['text'] = 'Count: ' + str(np.sum(allowed))
+
+    btn['command'] = cmd_btn
+    scale_1['command'] = cmd_1
+    scale_2['command'] = cmd_2

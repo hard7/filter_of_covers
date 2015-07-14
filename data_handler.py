@@ -39,6 +39,10 @@ class DataHandler(object):
         return [zip(*cover)[0] for cover in self.covers]
 
     @property
+    def spear_walked_count(self):
+        return map(len, self.spear_walked)
+
+    @property
     def spear_walked(self):
         spear_coords = map(set, self.spear_cells)
         fp = map(set, self.finished_packed_paths)

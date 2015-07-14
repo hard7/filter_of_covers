@@ -5,6 +5,8 @@ from data_handler import DataHandler
 from LG.field import Field as LG_Field
 from LG.solver import solve as LG_solve
 from LG.solver import Solver as LG_Solver
+import numpy as np
+import itertools
 
 def write(path, str_):
     with open(path, 'w') as f:
@@ -47,54 +49,94 @@ def show_stat_rm(root, handle):
 
     return action
 
-def case_0(root, handle):
-    import numpy as np
+def make_scales(root, name, array, allowed, i_, refrash):
+    tk.Label(root, text=name+':  ').grid(row=i_, column=0)
+    min_ = min(array)
+    max_ = max(array)
 
-    lbl_count = tk.Label(text='Count: ')
-    lbl_count.pack()
+    state = [min_, max_]
 
-    tk.Label(root, text='Spear walked:  ').pack(side=tk.LEFT)
-    scale_1 = tk.Scale(root, orient=tk.HORIZONTAL, length=200)
-
-    min_ = min(handle.spear_walked_count)
-    max_ = max(handle.spear_walked_count)
-
+    scale_1 = tk.Scale(root, orient=tk.HORIZONTAL, length=250)
     scale_1['showvalue'] = False
     scale_1['sliderlength'] = 20
-    scale_1['tickinterval'] = 1
+    scale_1['tickinterval'] = (max_ - min_) / 6
     scale_1['from'] = min_
     scale_1['to'] = max_
     scale_1.set(min_)
-    scale_1.pack(side=tk.LEFT)
+    scale_1.grid(row=i_, column=1)
 
-    scale_2 = tk.Scale(root, orient=tk.HORIZONTAL, length=200)
+    scale_2 = tk.Scale(root, orient=tk.HORIZONTAL, length=250)
     scale_2['showvalue'] = False
     scale_2['sliderlength'] = 20
-    scale_2['tickinterval'] = 1
+    scale_2['tickinterval'] = (max_ - min_) / 6
     scale_2['from'] = min_
     scale_2['to'] = max_
     scale_2.set(max_)
-    scale_2.pack(side=tk.LEFT)
+    scale_2.grid(row=i_, column=2)
 
     btn = tk.Button(root, text='Filter')
-    btn.pack(side=tk.LEFT)
-
-    allowed = np.ones((1, len(handle.covers)), dtype=np.bool)
+    btn.grid(row=i_, column=3)
 
     def cmd_1(var_1):
+        btn['bg'] = 'gray'
+        btn['activebackground'] = abg
+        if [scale_1.get(), scale_2.get()] != state:
+            btn['bg'] = 'gold2'
+            btn['activebackground'] = 'gold'
+
         if int(var_1) > scale_2.get():
             scale_1.set(scale_2.get())
 
     def cmd_2(var_2):
+        btn['bg'] = 'gray'
+        btn['activebackground'] = abg
+        if [scale_1.get(), scale_2.get()] != state:
+            btn['bg'] = 'gold2'
+            btn['activebackground'] = 'gold'
+
         if int(var_2) < scale_1.get():
             scale_2.set(scale_1.get())
 
+    abg = btn['activebackground']
+
     def cmd_btn():
         a, b = scale_1.get(), scale_2.get()
-        for i, c in enumerate(handle.spear_walked_count):
-            allowed[0, i] = (a <= c <= b)
-        lbl_count['text'] = 'Count: ' + str(np.sum(allowed))
+        state[:] = [a, b]
+        btn['bg'] = 'gray'
+        btn['activebackground'] = abg
+
+        for i, c in enumerate(array):
+            allowed[i_, i] = (a <= c <= b)
+        refrash()
 
     btn['command'] = cmd_btn
     scale_1['command'] = cmd_1
     scale_2['command'] = cmd_2
+
+
+def case_0(root, handle):
+    lbl_count = tk.Label(text='Count: ')
+    lbl_count.pack()
+
+    v0 = tk.IntVar()
+    allowed = np.ones((2, len(handle.covers)), dtype=np.bool)
+
+    def refrash():
+        n = np.sum(np.all(allowed, axis=0))
+        lbl_count['text'] = 'Count: ' + str(n)
+
+    c = itertools.count()
+    make_scales(root, 'spear_walked_count', handle.spear_walked_count, allowed, c.next(), refrash)
+    # make_scales(root, 'spear_walked_count', handle.spear_walked_count, allowed, c.next(), refrash)
+    make_scales(root, 'finished_packed_paths', map(len, handle.finished_packed_paths), allowed, c.next(), refrash)
+
+    # v0= f
+
+
+
+
+
+
+
+
+

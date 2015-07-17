@@ -7,6 +7,7 @@ from LG.solver import solve as LG_solve
 from LG.solver import Solver as LG_Solver
 import numpy as np
 import itertools
+import random
 
 def write(path, str_):
     with open(path, 'w') as f:
@@ -114,6 +115,9 @@ def make_scales(root, name, array, allowed, i_, refrash):
     scale_2['command'] = cmd_2
 
 
+def allowed_to_indices(allowed):
+    return np.where(np.all(allowed, axis=0))[0]
+
 def case_0(root, handle):
     lbl_count = tk.Label(text='Count: ')
     lbl_count.pack()
@@ -127,16 +131,20 @@ def case_0(root, handle):
 
     c = itertools.count()
     make_scales(root, 'spear_walked_count', handle.spear_walked_count, allowed, c.next(), refrash)
-    # make_scales(root, 'spear_walked_count', handle.spear_walked_count, allowed, c.next(), refrash)
     make_scales(root, 'finished_packed_paths', map(len, handle.finished_packed_paths), allowed, c.next(), refrash)
 
-    # v0= f
+    def _show_indexes():
+        print allowed_to_indices(allowed).tolist()
 
+    # jumbled_indexes = list()
+    #
+    # def _push_level():
+    #     if not jumbled_indexes:
+    #         indexes = allowed_to_indices(allowed)
+    #         jumbled_indexes[:] = np.random.shuffle(indexes)
+    #
 
-
-
-
-
-
+    tk.Button(root, text='Show Indexes', command=_show_indexes).grid()
+    # tk.Button(root, text='Push Level', command=_push_level).grid()
 
 

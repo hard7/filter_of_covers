@@ -6,6 +6,8 @@ from lazy_holder import LazyHolder
 from itertools import *
 from LG.field import Field as LG_Filed
 import StringIO
+import numpy as np
+import itertools
 
 # Covers dump description
 # of format https://goo.gl/Td4FmA
@@ -79,3 +81,45 @@ class DataHandler(object):
             raise Exception('Path for save should be set')
         with open(path_for_save, 'w') as f:
             cPickle.dump(self.data, f)
+
+    def choose_unique_covers(self, allowed, percent):
+        def _calc_similarity(first_path, second_path):
+            counter = 0
+            previous_index = None
+            for i in first_path:
+                if i in second_path:
+                    if previous_index is not None:
+                        counter += (i == second_path[previous_index + 1])
+                    previous_index = second_path.index(i)
+                else:
+                    previous_index = None
+            return counter
+
+
+        result, ignored = set(), set()
+        indies = np.where(allowed)[0]
+        indies = np.random.shuffle(indies)
+        for i in indies:
+            new_path_index = self.finished_paths[i]
+            new_path = self.paths[new_path_index]
+            if new_path_index in ignored:
+                continue
+            for j in result:
+                cur_path = self.paths[self.finished_paths[j]]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

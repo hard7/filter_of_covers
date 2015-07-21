@@ -5,6 +5,7 @@ import os.path
 from lazy_holder import LazyHolder, lazy
 from itertools import *
 from LG.field import Field as LG_Filed
+from LG.solver import Solver as LG_Solver
 import StringIO
 import numpy as np
 import itertools
@@ -50,7 +51,7 @@ class DataHandler(object):
         fp = map(set, self.finished_packed_paths)
         return map(lambda a, b: tuple(a & b), spear_coords, fp)
 
-    def product(self, cover_i):
+    def product_field(self, cover_i):
         assert isinstance(cover_i, int)
         cover = self.covers[cover_i]
         unpacked_cover = [(self.cells[c_id], self.periods[p_id]) for (c_id, p_id) in cover]
@@ -58,7 +59,10 @@ class DataHandler(object):
 
         field = LG_Filed.loads(self.base)
         map(field.add_spear, unpacked_unwrapped_cover)
-        return field.take_json()
+        return field
+
+    def product(self, cover_i):
+        return self.product_field(cover_i).take_json()
 
     def make_unwrapped_spears(self, id):
         cover = self.covers[id]
@@ -111,6 +115,18 @@ class DataHandler(object):
             result.append(len(path) - counter.next())
         return result
 
+    @LazyHolder
+    def distance_to_dead_ends(self):
+        result = list()
+        for i in xrange(1000):
+            if i % 100 == 0: print i
+            f = self.product_field(i)
+            s = LG_Solver(f)
+            s.run()
+            result.append(s.alternative_path_lens())
+        return result
+
+
     def choose_unique_covers(self, allowed, min_different):
         assert 0. < min_different < 1.
 
@@ -125,9 +141,9 @@ class DataHandler(object):
         result, ignored = set(), set()
         np.random.shuffle(indies)
 
-        _x = [self.finished_paths[i] for i in indies]
-
-        _z = 1
+        # _x = [self.finished_paths[i] for i in indies]
+        #
+        # _z = 1
         for p in indies:
             p_index = self.finished_paths[p]
             p_path = self.paths[p_index]

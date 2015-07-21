@@ -138,8 +138,10 @@ def case_0(root, handle):
 
     tk.Button(root, text='Show count of unique', command=count_of_unique).grid()
 
-    def demo():
-        i_ = 5032
+    def something():
+        x = handle.distance_to_dead_ends
+        print handle.data['time_spent']
+
         # print handle.count_of_step_before_last_spear[i_]
         # print handle.spear_cells[i_]
         # print handle.finished_packed_paths[i_]
@@ -153,6 +155,6 @@ def case_0(root, handle):
     #
 
     # tk.Button(root, text='Show Indexes', command=_show_indexes).grid()
-    # tk.Button(root, text='Demo', command=demo).grid()
+    tk.Button(root, text='Something', command=something).grid()
 
 

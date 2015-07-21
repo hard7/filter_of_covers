@@ -2,7 +2,7 @@ __author__ = 'hard7'
 
 import cPickle
 import os.path
-from lazy_holder import LazyHolder
+from lazy_holder import LazyHolder, lazy
 from itertools import *
 from LG.field import Field as LG_Filed
 import StringIO
@@ -28,7 +28,7 @@ class DataHandler(object):
         self._path_to_data = path_to_data
         self.load(path_to_data)
 
-    @property
+    @lazy
     def finished_packed_paths(self):
         return [self.paths[i] for i in self.finished_paths]
 
@@ -36,7 +36,7 @@ class DataHandler(object):
     def covers_count(self):
         return len(self.covers)
 
-    @property
+    @lazy
     def spear_cells(self):
         return [zip(*cover)[0] for cover in self.covers]
 
@@ -65,7 +65,6 @@ class DataHandler(object):
         unpacked_cover = [(self.cells[c_id], self.periods[p_id]) for (c_id, p_id) in cover]
         unpacked_unwrapped_cover = [tuple(chain(*c)) for c in unpacked_cover]
         return unpacked_unwrapped_cover
-
 
     def load(self, path=None):
         if path and os.path.isfile(path):
@@ -97,6 +96,20 @@ class DataHandler(object):
             else:
                 index_q_for_compare = None
         return counter
+
+    @lazy
+    def count_of_step_before_last_spear(self):
+        result = list()
+        for i in xrange(self.covers_count):
+            path = self.finished_packed_paths[i]
+            spear_cells = self.spear_cells[i]
+            counter = count()
+            for cell in reversed(path):
+                counter.next()
+                if cell in spear_cells:
+                    break
+            result.append(len(path) - counter.next())
+        return result
 
     def choose_unique_covers(self, allowed, min_different):
         assert 0. < min_different < 1.

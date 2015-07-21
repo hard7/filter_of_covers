@@ -1,10 +1,10 @@
 __author__ = 'hard7'
 
-import lazy
+from lazy import lazy
 import time
 
 
-class LazyHolder(lazy.lazy):
+class LazyHolder(lazy):
     def __init__(self, *args, **kwargs):
         super(self.__class__, self).__init__(*args, **kwargs)
 

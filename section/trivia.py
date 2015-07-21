@@ -138,8 +138,11 @@ def case_0(root, handle):
 
     tk.Button(root, text='Show count of unique', command=count_of_unique).grid()
 
-    def _show_indexes():
-        print allowed_to_indices(allowed).tolist()
+    def demo():
+        i_ = 5032
+        # print handle.count_of_step_before_last_spear[i_]
+        # print handle.spear_cells[i_]
+        # print handle.finished_packed_paths[i_]
 
     # jumbled_indexes = list()
     #
@@ -150,6 +153,6 @@ def case_0(root, handle):
     #
 
     # tk.Button(root, text='Show Indexes', command=_show_indexes).grid()
-    # tk.Button(root, text='Push Level', command=_push_level).grid()
+    # tk.Button(root, text='Demo', command=demo).grid()
 
 

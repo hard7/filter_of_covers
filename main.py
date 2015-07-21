@@ -14,8 +14,8 @@ if __name__ == '__main__':
     path_to_covers = '/home/anosov/data/hard_base/covers/case_0.dump'
     path_to_data = '/home/anosov/data/test_covers/data.dump'
 
-    dh = DataHandler(path_to_covers, path_to_data)
-    gui = GUI(dh)
+    h = DataHandler(path_to_covers, path_to_data)
+    gui = GUI(h)
     # gui.append(timer_section)
     # gui.append(show_42)
     # gui.append(show_count_of_covers)

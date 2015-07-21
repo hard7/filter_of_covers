@@ -133,6 +133,11 @@ def case_0(root, handle):
     make_scales(root, 'spear_walked_count', handle.spear_walked_count, allowed, c.next(), refrash)
     make_scales(root, 'finished_packed_paths', map(len, handle.finished_packed_paths), allowed, c.next(), refrash)
 
+    def count_of_unique():
+        d = handle.choose_unique_covers(allowed, 0.70)
+
+    tk.Button(root, text='Show count of unique', command=count_of_unique).grid()
+
     def _show_indexes():
         print allowed_to_indices(allowed).tolist()
 
@@ -144,7 +149,7 @@ def case_0(root, handle):
     #         jumbled_indexes[:] = np.random.shuffle(indexes)
     #
 
-    tk.Button(root, text='Show Indexes', command=_show_indexes).grid()
+    # tk.Button(root, text='Show Indexes', command=_show_indexes).grid()
     # tk.Button(root, text='Push Level', command=_push_level).grid()
 
 

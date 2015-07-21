@@ -83,7 +83,10 @@ class DataHandler(object):
             cPickle.dump(self.data, f)
 
     @staticmethod
-    def count_of_serial_match(self, p, q):
+    def count_of_serial_match(p, q):
+        assert len(p) == len(set(p))
+        assert len(q) == len(set(q))
+
         counter = 0
         index_q_for_compare = None
         for i in p:
@@ -95,26 +98,41 @@ class DataHandler(object):
                 index_q_for_compare = None
         return counter
 
-    def choose_unique_covers(self, allowed, percent):
+    def choose_unique_covers(self, allowed, min_different):
+        assert 0. < min_different < 1.
+
+        if allowed.ndim == 1:
+            indies = np.where(allowed)
+        elif allowed.ndim == 2:
+            indies = np.where(np.all(allowed, axis=0))
+        else:
+            raise Exception('allowed value mast be 1 or 2 dimension numpy array')
+
+        indies = indies[0]
         result, ignored = set(), set()
-        indies = np.where(allowed)[0]
-        indies = np.random.shuffle(indies)
-        for i in indies:
-            new_path_index = self.finished_paths[i]
-            new_path = self.paths[new_path_index]
-            if new_path_index in ignored:
+        np.random.shuffle(indies)
+
+        _x = [self.finished_paths[i] for i in indies]
+
+        _z = 1
+        for p in indies:
+            p_index = self.finished_paths[p]
+            p_path = self.paths[p_index]
+            if p_index in ignored:
                 continue
-            for j in result:
-                cur_path = self.paths[self.finished_paths[j]]
+            for q in result:
+                q_path = self.paths[self.finished_paths[q]]
+                c = DataHandler.count_of_serial_match(p_path, q_path)
+                max_len = max(len(p_path), max(q_path)) - 1
+                different = 1 - float(c) / max_len
+                if different < min_different:
+                    break   # fail in this context
+            else:    # mean what statement for completed without break
+                result.add(p)
+            ignored.add(p_index)
 
-
-
-
-
-
-
-
-
+        print '%d > %d (%.2f) ' % (len(set(_x)), len(result), min_different)
+        return list(result)
 
 
 

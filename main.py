@@ -51,16 +51,17 @@ def profile():
     path_to_stat_file = '/tmp/_profiling_'
     cProfile.run('solver_profiling()', path_to_stat_file)
     s = Stats(path_to_stat_file)
-    s.strip_dirs()
+    # s.strip_dirs()
     s.sort_stats('time')
     # s.sort_stats('cum')
-    s.print_stats(10)
+    s.print_stats(20)
 
     times = [v[2] for v in s.stats.values()]
     times.sort(reverse=True)
     # times = times[:N]
     sum_of_times = sum(times)
     print sum_of_times, [round(t / sum_of_times * 100, 2) for t in times][:10]
+
 
 if __name__ == '__main__':
     profile()

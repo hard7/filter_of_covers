@@ -82,20 +82,20 @@ class DataHandler(object):
         with open(path_for_save, 'w') as f:
             cPickle.dump(self.data, f)
 
+    @staticmethod
+    def count_of_serial_match(self, p, q):
+        counter = 0
+        index_q_for_compare = None
+        for i in p:
+            if i in q:
+                if index_q_for_compare is not None and index_q_for_compare < len(q):
+                    counter += (i == q[index_q_for_compare])
+                index_q_for_compare = q.index(i) + 1
+            else:
+                index_q_for_compare = None
+        return counter
+
     def choose_unique_covers(self, allowed, percent):
-        def _calc_similarity(first_path, second_path):
-            counter = 0
-            previous_index = None
-            for i in first_path:
-                if i in second_path:
-                    if previous_index is not None:
-                        counter += (i == second_path[previous_index + 1])
-                    previous_index = second_path.index(i)
-                else:
-                    previous_index = None
-            return counter
-
-
         result, ignored = set(), set()
         indies = np.where(allowed)[0]
         indies = np.random.shuffle(indies)

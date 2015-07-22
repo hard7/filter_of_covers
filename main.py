@@ -8,41 +8,44 @@ from section import trivia
 import os
 import numpy as np
 
+def find_distance(i_):
+    path_to_covers = '/home/anosov/data/hard_base/covers/case_%i.dump' % (i_, )
+    base, ext = os.path.splitext(path_to_covers)
+    path_to_data = base + '__computing' + ext
+    h = DataHandler(path_to_covers, path_to_data)
+    tmp = h.distance_to_dead_ends
+    h.dump()
+
 
 def main():
-    # path_to_covers = '/home/anosov/data/test_covers/test_50k_covers.dump'
-    # path_to_covers = '/home/anosov/data/test_covers/test_50k_covers_for_4_phases.dump'
-    # path_to_covers = '/home/anosov/data/test_covers/test_10k_covers_for_4_phases_600.dump'
     path_to_covers = '/home/anosov/data/hard_base/covers/case_0.dump'
-    path_to_data = os.path.splitext(path_to_covers)[0] + '__computing.dump'
-
-    print path_to_data
+    base, ext = os.path.splitext(path_to_covers)
+    path_to_data = base + '__computing' + ext
 
     h = DataHandler(path_to_covers, path_to_data)
     gui = GUI(h)
-    # gui.append(timer_section)
-    # gui.append(show_42)
-    # gui.append(show_count_of_covers)
 
     # gui.append(trivia.show_stat_rm)
     # gui.append(trivia.show_equal_stat)
+    gui.append(trivia.case_0)
 
-    # gui.append(trivia.case_0)
-    #
-    # gui.run()
-
-    d = h.distance_to_dead_ends
-
-path_to_covers = '/home/anosov/data/hard_base/covers/case_0.dump'
-h = DataHandler(path_to_covers)
+    gui.run()
 
 def solver_profiling():
+    path_to_covers = '/home/anosov/data/hard_base/covers/case_0.dump'
+    h = DataHandler(path_to_covers)
+
     from LG.solver import Solver as LG_Solver
-    f = h.product_field(100)
-    for i in xrange(45):
+
+    i_ = 0
+    f = h.product_field(i_)
+    for i in xrange(1):
         s = LG_Solver(f)
-        s.run()
-        s.alternative_path_lens()
+        a = s.run()
+        b = s.alternative_path_lens()
+        print a
+        print [h.cells[i] for i in h.finished_packed_paths[i_]]
+        print b
 
 def profile():
     import cProfile
@@ -64,5 +67,5 @@ def profile():
 
 
 if __name__ == '__main__':
-    profile()
-    # main()
+    # profile()
+    main()

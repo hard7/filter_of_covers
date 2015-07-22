@@ -37,6 +37,10 @@ class DataHandler(object):
     def covers_count(self):
         return len(self.covers)
 
+    @property
+    def gen_covers_count(self):
+        return xrange(self.covers_count)
+
     @lazy
     def spear_cells(self):
         return [zip(*cover)[0] for cover in self.covers]
@@ -104,7 +108,7 @@ class DataHandler(object):
     @lazy
     def count_of_step_before_last_spear(self):
         result = list()
-        for i in xrange(self.covers_count):
+        for i in self.gen_covers_count:
             path = self.finished_packed_paths[i]
             spear_cells = self.spear_cells[i]
             counter = count()
@@ -118,7 +122,7 @@ class DataHandler(object):
     @LazyHolder
     def distance_to_dead_ends(self):
         result = list()
-        for i in xrange(1000):
+        for i in self.gen_covers_count:
             if i % 100 == 0: print i
             f = self.product_field(i)
             s = LG_Solver(f)
@@ -126,6 +130,15 @@ class DataHandler(object):
             result.append(s.alternative_path_lens())
         return result
 
+    @lazy
+    def max_distance_to_dead_ends(self):
+        result = list()
+        for i in self.gen_covers_count:
+            len_ = self.count_of_step_before_last_spear[i]
+            de = self.distance_to_dead_ends[i][:len_]
+            res = max([0] + list(chain(*de)))
+            result.append(res)
+        return result
 
     def choose_unique_covers(self, allowed, min_different):
         assert 0. < min_different < 1.
@@ -141,7 +154,7 @@ class DataHandler(object):
         result, ignored = set(), set()
         np.random.shuffle(indies)
 
-        # _x = [self.finished_paths[i] for i in indies]
+
         #
         # _z = 1
         for p in indies:
@@ -160,6 +173,7 @@ class DataHandler(object):
                 result.add(p)
             ignored.add(p_index)
 
+        _x = [self.finished_paths[i] for i in indies]
         print '%d > %d (%.2f) ' % (len(set(_x)), len(result), min_different)
         return list(result)
 

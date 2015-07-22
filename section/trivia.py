@@ -16,6 +16,19 @@ def write(path, str_):
 EXTERNAL_PATH = '/ExternalLevels/'
 
 
+def dec_button(root, *ar, **kw):
+    btn = tk.Button(root)
+    def decorator(fn):
+        btn['text'] = fn.__name__
+        btn['command'] = fn
+        btn.grid(*ar, **kw)
+        return fn
+    return decorator
+
+def dec_freak(fn):    # button decorator off switcher
+    pass
+
+
 def show_stat_rm(root, handle):
     assert isinstance(handle, DataHandler)
 
@@ -33,13 +46,11 @@ def show_stat_rm(root, handle):
     max_finished_paths_with_indexes = filter(lambda (i, len_): len_ == max_, enumerate(lens_of_finished_paths))
     idx_of_max = list(zip(*max_finished_paths_with_indexes)[0])
 
+    @dec_button(root)
     def press_button_out_level():
         print len(idx_of_max)
-
         with open('/ExternalLevels/lvl.txt', 'w') as f:
             f.write(handle.product(idx_of_max.pop(0)))
-
-    tk.Button(root, text='Out level', command=press_button_out_level).pack()
 
     def action():
         # average_len_of_finished_path
@@ -123,38 +134,38 @@ def case_0(root, handle):
     lbl_count.pack()
 
     v0 = tk.IntVar()
-    allowed = np.ones((2, len(handle.covers)), dtype=np.bool)
+    allowed = np.ones((4, len(handle.covers)), dtype=np.bool)
+    unique_var = tk.IntVar()
 
     def refrash():
+        if unique_var.get():
+            indies = handle.choose_unique_covers(allowed[1:], 0.60)
+            allowed[0] &= False
+            for i in indies:
+                allowed[0, i] = True
+        else:
+            allowed[0] |= True
+
         n = np.sum(np.all(allowed, axis=0))
         lbl_count['text'] = 'Count: ' + str(n)
 
     c = itertools.count()
+
+    tk.Checkbutton(root, text='Unique', command=refrash, variable=unique_var).grid(row=c.next(), column=1)
+
     make_scales(root, 'spear_walked_count', handle.spear_walked_count, allowed, c.next(), refrash)
     make_scales(root, 'finished_packed_paths', map(len, handle.finished_packed_paths), allowed, c.next(), refrash)
+    make_scales(root, 'max_distance_to_dead_ends', handle.max_distance_to_dead_ends, allowed, c.next(), refrash)
 
-    def count_of_unique():
-        d = handle.choose_unique_covers(allowed, 0.70)
+    @dec_button(root)
+    def push_all():
+        al = np.all(allowed, axis=0)
+        indies = np.where(al)[0]
+        assert len(indies) < 100
+        for i, id_ in enumerate(indies):
+            write(EXTERNAL_PATH + 'lvl_%i.txt' % (i, ), handle.product(id_))
 
-    tk.Button(root, text='Show count of unique', command=count_of_unique).grid()
-
+    # @dec_button(root)
     def something():
-        x = handle.distance_to_dead_ends
-        print handle.data['time_spent']
-
-        # print handle.count_of_step_before_last_spear[i_]
-        # print handle.spear_cells[i_]
-        # print handle.finished_packed_paths[i_]
-
-    # jumbled_indexes = list()
-    #
-    # def _push_level():
-    #     if not jumbled_indexes:
-    #         indexes = allowed_to_indices(allowed)
-    #         jumbled_indexes[:] = np.random.shuffle(indexes)
-    #
-
-    # tk.Button(root, text='Show Indexes', command=_show_indexes).grid()
-    tk.Button(root, text='Something', command=something).grid()
-
+        pass
 

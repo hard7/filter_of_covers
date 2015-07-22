@@ -8,6 +8,7 @@ from LG.solver import Solver as LG_Solver
 import numpy as np
 import itertools
 import random
+from functools import partial
 
 def write(path, str_):
     with open(path, 'w') as f:
@@ -61,69 +62,52 @@ def show_stat_rm(root, handle):
 
     return action
 
-def make_scales(root, name, array, allowed, i_, refrash):
-    tk.Label(root, text=name+':  ').grid(row=i_, column=0)
-    min_ = min(array)
-    max_ = max(array)
+def make_scales(root, name, array, allowed, index, refrash):
+    tk.Label(root, text=name+':  ').grid(row=index, column=0)
 
-    state = [min_, max_]
+    make_scale = partial(tk.Scale, root, orient=tk.HORIZONTAL, length=250)
+    scales = [make_scale(), make_scale()]
+    state = [min(array), max(array)]
 
-    scale_1 = tk.Scale(root, orient=tk.HORIZONTAL, length=250)
-    scale_1['showvalue'] = False
-    scale_1['sliderlength'] = 20
-    scale_1['tickinterval'] = (max_ - min_) / 6
-    scale_1['from'] = min_
-    scale_1['to'] = max_
-    scale_1.set(min_)
-    scale_1.grid(row=i_, column=1)
-
-    scale_2 = tk.Scale(root, orient=tk.HORIZONTAL, length=250)
-    scale_2['showvalue'] = False
-    scale_2['sliderlength'] = 20
-    scale_2['tickinterval'] = (max_ - min_) / 6
-    scale_2['from'] = min_
-    scale_2['to'] = max_
-    scale_2.set(max_)
-    scale_2.grid(row=i_, column=2)
+    for i, scale in enumerate(scales):
+        scale.config(sliderlength=20, tickinterval=(state[1] - state[0]) / 6)
+        scale.config(showvalue=False, from_=state[0], to=state[1])
+        scale.set(state[i])
+        scale.grid(row=index, column=i+1)
 
     btn = tk.Button(root, text='Filter')
-    btn.grid(row=i_, column=3)
+    btn.grid(row=index, column=3)
 
-    def cmd_1(var_1):
-        btn['bg'] = 'gray'
-        btn['activebackground'] = abg
-        if [scale_1.get(), scale_2.get()] != state:
-            btn['bg'] = 'gold2'
-            btn['activebackground'] = 'gold'
+    # ~ color #d6d2d0 is standard for activebackground
+    button_set_normal = lambda btn: btn.config(bg='gray', activebackground='#d6d2d0')
+    button_set_gold = lambda btn: btn.config(bg='gold2', activebackground='gold')
 
-        if int(var_1) > scale_2.get():
-            scale_1.set(scale_2.get())
+    def cmd(index):
+        assert index in [0, 1]
+        cur_scale = scales[index]
+        other_scale = scales[1 - index]
 
-    def cmd_2(var_2):
-        btn['bg'] = 'gray'
-        btn['activebackground'] = abg
-        if [scale_1.get(), scale_2.get()] != state:
-            btn['bg'] = 'gold2'
-            btn['activebackground'] = 'gold'
+        def wrapper(var):
+            button_set_normal(btn)
 
-        if int(var_2) < scale_1.get():
-            scale_2.set(scale_1.get())
+            vars = [s.get() for s in scales]
+            if vars[0] > vars[1]:
+                cur_scale.set(other_scale.get())
+            if vars != state:
+                button_set_gold(btn)
 
-    abg = btn['activebackground']
+        return wrapper
 
     def cmd_btn():
-        a, b = scale_1.get(), scale_2.get()
-        state[:] = [a, b]
-        btn['bg'] = 'gray'
-        btn['activebackground'] = abg
+        state[:] = [s.get() for s in scales]
+        button_set_normal(btn)
 
         for i, c in enumerate(array):
-            allowed[i_, i] = (a <= c <= b)
+            allowed[index, i] = (state[0] <= c <= state[1])
         refrash()
 
-    btn['command'] = cmd_btn
-    scale_1['command'] = cmd_1
-    scale_2['command'] = cmd_2
+    btn.config(command=cmd_btn)
+    [scale.config(command=cmd(i)) for i, scale in enumerate(scales)]
 
 
 def allowed_to_indices(allowed):
